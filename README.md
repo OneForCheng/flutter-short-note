@@ -1,16 +1,26 @@
-# short_note
+# 简介
 
-A new Flutter project.
+一个基于 Flutter 构建的便签App。
 
-## Getting Started
+# 功能
 
-This project is a starting point for a Flutter application.
+**第一阶段**
 
-A few resources to get you started if this is your first Flutter project:
+- [ ] 显示便签列表
+- [ ] 创建便签项
+- [ ] 编辑便签项
+- [ ] 移除便签项
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+**第二阶段**
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- [ ] 切换完成或未完成状态
+- [ ] 按状态显示便签列表
+- [ ] 搜索便签列表项（关联当前选中状态）
+
+**第三阶段**
+
+- [ ] 显示标签列表
+- [ ] 创建标签项
+- [ ] 移除标签项
+- [ ] 给便签项添加标签
+- [ ] 按标签分类显示便签列表（关联搜索功能）
