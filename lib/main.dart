@@ -26,13 +26,24 @@ class NoteListState extends State<NoteList> {
     return new ListView.builder(
       itemCount: _noteItems.length,
       itemBuilder: (context, index) {
-        return _buildNoteItem(_noteItems[index]);
+        return _buildNoteItem(_noteItems[index], index);
       },
     );
   }
 
-  Widget _buildNoteItem(String text) {
-    return new ListTile(title: new Text(text));
+  Widget _buildNoteItem(String text, int index) {
+    return new ListTile(
+      title: new Text(text),
+      trailing: Wrap(
+        //列表项的类型是 <Widget>
+        children: <Widget>[
+          new IconButton(
+            icon: new Icon(Icons.close),
+            onPressed: () => _promptRemoveNoteItem(index),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -69,5 +80,29 @@ class NoteListState extends State<NoteList> {
                 contentPadding: const EdgeInsets.all(16.0)),
           ));
     }));
+  }
+
+  void _removeNoteItem(int index) {
+    setState(() => _noteItems.removeAt(index));
+  }
+
+  void _promptRemoveNoteItem(int index) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return new AlertDialog(
+              title: new Text('Remove "${_noteItems[index]}"?'),
+              actions: <Widget>[
+                new FlatButton(
+                    child: new Text('Cancel'),
+                    onPressed: () => Navigator.of(context).pop()),
+                new FlatButton(
+                    child: new Text('OK'),
+                    onPressed: () {
+                      _removeNoteItem(index);
+                      Navigator.of(context).pop();
+                    })
+              ]);
+        });
   }
 }
