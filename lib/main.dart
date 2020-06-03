@@ -41,6 +41,10 @@ class NoteListState extends State<NoteList> {
             icon: new Icon(Icons.close),
             onPressed: () => _promptRemoveNoteItem(index),
           ),
+          new IconButton(
+            icon: new Icon(Icons.edit),
+            onPressed: () => _promptEditNoteItem(index),
+          ),
         ],
       ),
     );
@@ -104,5 +108,35 @@ class NoteListState extends State<NoteList> {
                     })
               ]);
         });
+  }
+
+  void _updateNoteItem(int index, String text) {
+    setState(() {
+      _noteItems[index] = text;
+    });
+  }
+
+  void _promptEditNoteItem(int index) {
+    Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
+      final originalText = _noteItems[index];
+      return new Scaffold(
+          appBar: new AppBar(title: new Text('Edit the note')),
+          body: new TextField(
+            controller: new TextEditingController(text: originalText),
+            autofocus: true,
+            onSubmitted: (val) {
+              final text = val.trim();
+              if (text.length > 0) {
+                if (text != originalText) {
+                  _updateNoteItem(index, text);
+                }
+                Navigator.pop(context);
+              }
+            },
+            decoration: new InputDecoration(
+                hintText: 'Enter something...',
+                contentPadding: const EdgeInsets.all(16.0)),
+          ));
+    }));
   }
 }
