@@ -1,66 +1,66 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(ShortNoteApp());
+  runApp(NoteApp());
 }
 
-class ShortNoteApp extends StatelessWidget {
+class NoteApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: 'Short Note List',
-      home: new ShortNoteList(),
+      title: 'Note List',
+      home: new NoteList(),
     );
   }
 }
 
-class ShortNoteList extends StatefulWidget {
+class NoteList extends StatefulWidget {
   @override
-  createState() => new ShortNoteListState();
+  createState() => new NoteListState();
 }
 
-class ShortNoteListState extends State<ShortNoteList> {
-  List<String> _shortNoteItems = [];
+class NoteListState extends State<NoteList> {
+  List<String> _noteItems = [];
 
-  Widget _buildShortNoteList() {
+  Widget _buildNoteList() {
     return new ListView.builder(
-      itemCount: _shortNoteItems.length,
+      itemCount: _noteItems.length,
       itemBuilder: (context, index) {
-        return _buildShortNoteItem(_shortNoteItems[index]);
+        return _buildNoteItem(_noteItems[index]);
       },
     );
   }
 
-  Widget _buildShortNoteItem(String shortNoteText) {
-    return new ListTile(title: new Text(shortNoteText));
+  Widget _buildNoteItem(String text) {
+    return new ListTile(title: new Text(text));
   }
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(title: new Text('ShortNote List')),
-      body: _buildShortNoteList(),
+      appBar: new AppBar(title: new Text('Note List')),
+      body: _buildNoteList(),
       floatingActionButton: new FloatingActionButton(
-          onPressed: _pushAddShortNoteScreen,
+          onPressed: _pushAddNoteScreen,
           tooltip: 'Add note',
           child: new Icon(Icons.add)),
     );
   }
 
-  void _addShortNoteItem(String item) {
-    setState(() => _shortNoteItems.add(item));
+  void _addNoteItem(String text) {
+    setState(() => _noteItems.add(text));
   }
 
-  void _pushAddShortNoteScreen() {
+  void _pushAddNoteScreen() {
     Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
       return new Scaffold(
           appBar: new AppBar(title: new Text('Add a new note')),
           body: new TextField(
             autofocus: true,
             onSubmitted: (val) {
-              final trimStr = val.trim();
-              if (trimStr.length > 0) {
-                _addShortNoteItem(trimStr);
+              final text = val.trim();
+              if (text.length > 0) {
+                _addNoteItem(text);
                 Navigator.pop(context);
               }
             },
