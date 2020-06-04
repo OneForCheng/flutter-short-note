@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 
 void main() {
   runApp(NoteApp());
@@ -15,13 +16,21 @@ class NoteApp extends StatelessWidget {
   }
 }
 
+class NoteItem {
+  NoteItem(this.text, this.createTime);
+
+  final String text;
+  final DateTime createTime;
+}
+
 class NoteList extends StatefulWidget {
   @override
   createState() => new NoteListState();
 }
 
 class NoteListState extends State<NoteList> {
-  List<String> _noteItems = [];
+  final dateTimeFormat = new DateFormat('yyyy-MM-dd hh:mm');
+  List<NoteItem> _noteItems = [];
 
   Widget _buildNoteList() {
     return new ListView.builder(
@@ -32,15 +41,31 @@ class NoteListState extends State<NoteList> {
     );
   }
 
-  Widget _buildNoteItem(String text, int index) {
+  Widget _buildNoteItem(NoteItem noteItem, int index) {
     return new Card(
-      child: new ListTile(
-      title: new Text(
-        text,
-        style: TextStyle(fontSize: 10),
+      child: new InkWell(
+        onTap: () => _promptEditNoteItem(index),
+        child: new Padding(
+          padding: EdgeInsets.all(8.0),
+          child: new Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                new Text(
+                  noteItem.text,
+                  style: TextStyle(fontSize: 10),
+                ),
+                new Container(
+                  margin: const EdgeInsets.only(top: 5.0),
+                  child: new Text(
+                    dateTimeFormat.format(noteItem.createTime),
+                    style: TextStyle(fontSize: 8, color: Colors.grey[500]),
+                  ),
+                ),
+              ]),
+        ),
       ),
-      onTap: () => _promptEditNoteItem(index),
-    ));
+    );
   }
 
   @override
@@ -61,7 +86,7 @@ class NoteListState extends State<NoteList> {
   }
 
   void _addNoteItem(String text) {
-    setState(() => _noteItems.add(text));
+    setState(() => _noteItems.add(new NoteItem(text, DateTime.now())));
   }
 
   void _pushAddNoteScreen() {
@@ -122,13 +147,13 @@ class NoteListState extends State<NoteList> {
 
   void _updateNoteItem(int index, String text) {
     setState(() {
-      _noteItems[index] = text;
+      _noteItems[index] = new NoteItem(text, DateTime.now());
     });
   }
 
   void _promptEditNoteItem(int index) {
     Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
-      final originalText = _noteItems[index];
+      final originalText = _noteItems[index].text;
       return new Scaffold(
           appBar: new AppBar(
             title: new Text('编辑便签'),
