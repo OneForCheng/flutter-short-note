@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
 void main() {
   runApp(NoteApp());
@@ -8,7 +9,7 @@ class NoteApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: 'Notes',
+      title: '便签',
       home: new NoteList(),
     );
   }
@@ -34,19 +35,7 @@ class NoteListState extends State<NoteList> {
   Widget _buildNoteItem(String text, int index) {
     return new ListTile(
       title: new Text(text),
-      trailing: Wrap(
-        //列表项的类型是 <Widget>
-        children: <Widget>[
-          new IconButton(
-            icon: new Icon(Icons.close),
-            onPressed: () => _promptRemoveNoteItem(index),
-          ),
-          new IconButton(
-            icon: new Icon(Icons.edit),
-            onPressed: () => _promptEditNoteItem(index),
-          ),
-        ],
-      ),
+      onTap: () => _promptEditNoteItem(index),
     );
   }
 
@@ -54,14 +43,14 @@ class NoteListState extends State<NoteList> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('Notes'),
+        title: new Text('便签'),
         actions: <Widget>[
-            new IconButton(
-              icon: const Icon(Icons.note_add),
-              onPressed: _pushAddNoteScreen,
-              tooltip: 'Add note',
-            ),
-          ],
+          new IconButton(
+            icon: const Icon(Icons.note_add),
+            onPressed: _pushAddNoteScreen,
+            tooltip: '添加便签',
+          ),
+        ],
       ),
       body: _buildNoteList(),
     );
@@ -74,7 +63,7 @@ class NoteListState extends State<NoteList> {
   void _pushAddNoteScreen() {
     Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
       return new Scaffold(
-          appBar: new AppBar(title: new Text('Add a new note')),
+          appBar: new AppBar(title: new Text('添加便签')),
           body: new TextField(
             autofocus: true,
             onSubmitted: (val) {
@@ -85,8 +74,7 @@ class NoteListState extends State<NoteList> {
               }
             },
             decoration: new InputDecoration(
-                hintText: 'Enter something...',
-                contentPadding: const EdgeInsets.all(16.0)),
+                hintText: '记事', contentPadding: const EdgeInsets.all(16.0)),
           ));
     }));
   }
@@ -99,17 +87,30 @@ class NoteListState extends State<NoteList> {
     showDialog(
         context: context,
         builder: (BuildContext context) {
-          return new AlertDialog(
-              title: new Text('Remove "${_noteItems[index]}"?'),
+          return new CupertinoAlertDialog(
+              content: Text("是否要删除？"),
               actions: <Widget>[
-                new FlatButton(
-                    child: new Text('Cancel'),
+                new CupertinoDialogAction(
+                    child: new Text(
+                      '取消',
+                      style: TextStyle(
+                        fontSize: 12,
+                      ),
+                    ),
                     onPressed: () => Navigator.of(context).pop()),
-                new FlatButton(
-                    child: new Text('OK'),
+                new CupertinoDialogAction(
+                    child: new Text(
+                      '确认',
+                      style: TextStyle(
+                        color: Colors.red[600],
+                        fontSize: 12,
+                      ),
+                    ),
                     onPressed: () {
                       _removeNoteItem(index);
-                      Navigator.of(context).pop();
+                      final nav = Navigator.of(context);
+                      nav.pop();
+                      nav.pop();
                     })
               ]);
         });
@@ -125,10 +126,18 @@ class NoteListState extends State<NoteList> {
     Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
       final originalText = _noteItems[index];
       return new Scaffold(
-          appBar: new AppBar(title: new Text('Edit the note')),
+          appBar: new AppBar(
+            title: new Text('编辑便签'),
+            actions: <Widget>[
+              new IconButton(
+                icon: const Icon(Icons.delete),
+                onPressed: () => _promptRemoveNoteItem(index),
+                tooltip: '移除便签',
+              ),
+            ],
+          ),
           body: new TextField(
             controller: new TextEditingController(text: originalText),
-            autofocus: true,
             onSubmitted: (val) {
               final text = val.trim();
               if (text.length > 0) {
@@ -139,8 +148,7 @@ class NoteListState extends State<NoteList> {
               }
             },
             decoration: new InputDecoration(
-                hintText: 'Enter something...',
-                contentPadding: const EdgeInsets.all(16.0)),
+                hintText: '记事', contentPadding: const EdgeInsets.all(16.0)),
           ));
     }));
   }
