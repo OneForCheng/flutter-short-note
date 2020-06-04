@@ -33,10 +33,14 @@ class NoteListState extends State<NoteList> {
   }
 
   Widget _buildNoteItem(String text, int index) {
-    return new ListTile(
-      title: new Text(text),
+    return new Card(
+      child: new ListTile(
+      title: new Text(
+        text,
+        style: TextStyle(fontSize: 10),
+      ),
       onTap: () => _promptEditNoteItem(index),
-    );
+    ));
   }
 
   @override
