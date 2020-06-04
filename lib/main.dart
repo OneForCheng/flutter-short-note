@@ -8,7 +8,7 @@ class NoteApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
-      title: 'Note List',
+      title: 'Notes',
       home: new NoteList(),
     );
   }
@@ -53,12 +53,17 @@ class NoteListState extends State<NoteList> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(title: new Text('Note List')),
+      appBar: new AppBar(
+        title: new Text('Notes'),
+        actions: <Widget>[
+            new IconButton(
+              icon: const Icon(Icons.note_add),
+              onPressed: _pushAddNoteScreen,
+              tooltip: 'Add note',
+            ),
+          ],
+      ),
       body: _buildNoteList(),
-      floatingActionButton: new FloatingActionButton(
-          onPressed: _pushAddNoteScreen,
-          tooltip: 'Add note',
-          child: new Icon(Icons.add)),
     );
   }
 
