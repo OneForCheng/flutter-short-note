@@ -29,7 +29,7 @@ class NoteList extends StatefulWidget {
 }
 
 class NoteListState extends State<NoteList> {
-  final dateTimeFormat = new DateFormat('yyyy-MM-dd hh:mm');
+  final _dateTimeFormat = new DateFormat('yyyy-MM-dd hh:mm');
   List<NoteItem> _noteItems = [];
 
   Widget _buildNoteList() {
@@ -58,7 +58,7 @@ class NoteListState extends State<NoteList> {
                 new Container(
                   margin: const EdgeInsets.only(top: 5.0),
                   child: new Text(
-                    dateTimeFormat.format(noteItem.createTime),
+                    _dateTimeFormat.format(noteItem.createTime),
                     style: TextStyle(fontSize: 8, color: Colors.grey[500]),
                   ),
                 ),
