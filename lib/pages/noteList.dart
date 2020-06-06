@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
-import 'package:short_note/common/global.dart';
+import 'package:short_note/database/noteSqlite.dart';
 import 'package:short_note/models/note.dart';
 
 class NoteList extends StatefulWidget {
@@ -20,9 +20,7 @@ class NoteListState extends State<NoteList> {
   }
 
   void _loadData() async {
-    // 连接数据库
-    await Global.noteSqlite.openSqlite();
-    List<Note> notes = await Global.noteSqlite.queryAll();
+    List<Note> notes = await NoteSqlite.queryAll();
 
     setState(() {
       _notes = notes;
@@ -32,13 +30,11 @@ class NoteListState extends State<NoteList> {
   @override
   dispose() async {
     super.dispose();
-    // 关闭数据库
-    await Global.noteSqlite.close();
+    await NoteSqlite.close();
   }
 
   @override
   Widget build(BuildContext context) {
-    print('test');
     return new Scaffold(
       appBar: new AppBar(
         title: new Text('便签'),
@@ -91,7 +87,7 @@ class NoteListState extends State<NoteList> {
   }
 
   void _addNote(String text) async {
-    Note note = await Global.noteSqlite.insert(new Note(text, DateTime.now().toString()));
+    Note note = await NoteSqlite.insert(new Note(text, DateTime.now().toString()));
 
     setState(() => _notes.add(note));
   }
@@ -99,7 +95,7 @@ class NoteListState extends State<NoteList> {
   void _removeNote(int index) async {
     int id = _notes[index].id;
 
-    await Global.noteSqlite.delete(id);
+    await NoteSqlite.delete(id);
 
     setState(() => _notes.removeAt(index));
   }
@@ -108,7 +104,7 @@ class NoteListState extends State<NoteList> {
     Note target = _notes[index];
     Note newNote = new Note(text, DateTime.now().toString(), target.id);
 
-    await Global.noteSqlite.update(newNote);
+    await NoteSqlite.update(newNote);
 
     setState(() {
       _notes[index] = newNote;

@@ -3,16 +3,24 @@ import 'package:short_note/models/note.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:short_note/constants/database.dart';
 
-class NoteSqlite {
-  Database db;
+class NoteSqliteManager {
 
-  openSqlite() async {
+  // Singleton for multiple widget
+  static final NoteSqliteManager _manager = NoteSqliteManager._internal();
+  
+  static NoteSqliteManager get instance => _manager;
+
+  NoteSqliteManager._internal();
+
+  Database _db;
+
+  Future<void> _init() async {
     // 获取数据库文件的存储路径
     var databasesPath = await getDatabasesPath();
     String path = join(databasesPath, dbFileName);
 
     //根据数据库文件路径和数据库版本号创建数据库表
-    db = await openDatabase(path, version: 1,
+    _db = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
       await db.execute('''
           CREATE TABLE $dbTableName (
@@ -23,14 +31,29 @@ class NoteSqlite {
     });
   }
 
+  Future<Database> getDatabase() async {
+    if (_db == null) await _init();
+    return _db;
+  }
+
+  Future<void> close() async {
+    if (_db == null) return
+    _db.close();
+    _db = null;
+  }
+}
+
+class NoteSqlite {
   // 插入一条便签数据
-  Future<Note> insert(Note note) async {
+  static Future<Note> insert(Note note) async {
+    Database db = await NoteSqliteManager.instance.getDatabase();
     note.id = await db.insert(dbTableName, note.toMap());
     return note;
   }
 
   // 查找所有便签信息
-  Future<List<Note>> queryAll() async {
+  static Future<List<Note>> queryAll() async {
+    Database db = await NoteSqliteManager.instance.getDatabase();
     List<Map> maps = await db.query(dbTableName, columns: [
       dbColumnId,
       dbColumnContent,
@@ -49,7 +72,8 @@ class NoteSqlite {
   }
 
   // 根据ID查找便签信息
-  Future<Note> find(int id) async {
+  static Future<Note> find(int id) async {
+    Database db = await NoteSqliteManager.instance.getDatabase();
     List<Map> maps = await db.query(dbTableName,
         columns: [
           dbColumnId,
@@ -65,19 +89,20 @@ class NoteSqlite {
   }
 
   // 根据ID删除便签信息
-  Future<int> delete(int id) async {
+  static Future<int> delete(int id) async {
+    Database db = await NoteSqliteManager.instance.getDatabase();
     return await db
         .delete(dbTableName, where: '$dbColumnId = ?', whereArgs: [id]);
   }
 
   // 更新便签信息
-  Future<int> update(Note note) async {
+  static Future<int> update(Note note) async {
+    Database db = await NoteSqliteManager.instance.getDatabase();
     return await db.update(dbTableName, note.toMap(),
         where: '$dbColumnId = ?', whereArgs: [note.id]);
   }
 
-  // 记得及时关闭数据库，防止内存泄漏
-  close() async {
-    await db.close();
+  static Future<void> close() async {
+    await NoteSqliteManager.instance.close();
   }
 }
