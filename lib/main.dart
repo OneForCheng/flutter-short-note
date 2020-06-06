@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:short_note/pages/noteList.dart';
+
+import 'bloc/bloc.dart';
 
 void main() {
   runApp(NoteApp());
@@ -8,9 +11,12 @@ void main() {
 class NoteApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: '便签',
-      home: new NoteList(),
+      home: BlocProvider(
+          bloc:  NoteBloc.instance,
+          child: NoteList(),
+        )
     );
   }
 }

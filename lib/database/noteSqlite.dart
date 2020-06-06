@@ -52,7 +52,7 @@ class NoteSqlite {
   }
 
   // 查找所有便签信息
-  static Future<List<Note>> queryAll() async {
+  static Future<List<Note>> getAll() async {
     Database db = await NoteSqliteManager.instance.getDatabase();
     List<Map> maps = await db.query(dbTableName, columns: [
       dbColumnId,
