@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
-import 'package:short_note/models/noteItem.dart';
+import 'package:short_note/common/global.dart';
+import 'package:short_note/models/note.dart';
 
 class NoteList extends StatefulWidget {
   @override
@@ -9,11 +10,35 @@ class NoteList extends StatefulWidget {
 }
 
 class NoteListState extends State<NoteList> {
-  final _dateTimeFormat = new DateFormat('yyyy-MM-dd hh:mm');
-  List<NoteItem> _noteItems = [];
+  final DateFormat _dateTimeFormat = new DateFormat('yyyy-MM-dd hh:mm');
+  List<Note> _notes = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  void _loadData() async {
+    // 连接数据库
+    await Global.noteSqlite.openSqlite();
+    List<Note> notes = await Global.noteSqlite.queryAll();
+
+    setState(() {
+      _notes = notes;
+    });
+  }
+
+  @override
+  dispose() async {
+    super.dispose();
+    // 关闭数据库
+    await Global.noteSqlite.close();
+  }
 
   @override
   Widget build(BuildContext context) {
+    print('test');
     return new Scaffold(
       appBar: new AppBar(
         title: new Text('便签'),
@@ -31,17 +56,17 @@ class NoteListState extends State<NoteList> {
 
   Widget _buildNoteList() {
     return new ListView.builder(
-      itemCount: _noteItems.length,
+      itemCount: _notes.length,
       itemBuilder: (context, index) {
-        return _buildNoteItem(_noteItems[index], index);
+        return _buildNote(_notes[index], index);
       },
     );
   }
 
-  Widget _buildNoteItem(NoteItem noteItem, int index) {
+  Widget _buildNote(Note note, int index) {
     return new Card(
       child: new InkWell(
-        onTap: () => _promptEditNoteItem(index),
+        onTap: () => _promptEditNote(index),
         child: new Padding(
           padding: EdgeInsets.all(8.0),
           child: new Column(
@@ -49,13 +74,13 @@ class NoteListState extends State<NoteList> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 new Text(
-                  noteItem.text,
+                  note.content,
                   style: TextStyle(fontSize: 10),
                 ),
                 new Container(
                   margin: const EdgeInsets.only(top: 5.0),
                   child: new Text(
-                    _dateTimeFormat.format(noteItem.createTime),
+                    _dateTimeFormat.format(DateTime.parse(note.createTime)),
                     style: TextStyle(fontSize: 8, color: Colors.grey[500]),
                   ),
                 ),
@@ -65,17 +90,28 @@ class NoteListState extends State<NoteList> {
     );
   }
 
-  void _addNoteItem(String text) {
-    setState(() => _noteItems.add(new NoteItem(text, DateTime.now())));
+  void _addNote(String text) async {
+    Note note = await Global.noteSqlite.insert(new Note(text, DateTime.now().toString()));
+
+    setState(() => _notes.add(note));
   }
 
-  void _removeNoteItem(int index) {
-    setState(() => _noteItems.removeAt(index));
+  void _removeNote(int index) async {
+    int id = _notes[index].id;
+
+    await Global.noteSqlite.delete(id);
+
+    setState(() => _notes.removeAt(index));
   }
 
-  void _updateNoteItem(int index, String text) {
+  void _updateNote(int index, String text) async {
+    Note target = _notes[index];
+    Note newNote = new Note(text, DateTime.now().toString(), target.id);
+
+    await Global.noteSqlite.update(newNote);
+
     setState(() {
-      _noteItems[index] = new NoteItem(text, DateTime.now());
+      _notes[index] = newNote;
     });
   }
 
@@ -88,7 +124,7 @@ class NoteListState extends State<NoteList> {
             onSubmitted: (val) {
               final text = val.trim();
               if (text.length > 0) {
-                _addNoteItem(text);
+                _addNote(text);
                 Navigator.pop(context);
               }
             },
@@ -98,7 +134,7 @@ class NoteListState extends State<NoteList> {
     }));
   }
 
-  void _promptRemoveNoteItem(int index) {
+  void _promptRemoveNote(int index) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -122,7 +158,7 @@ class NoteListState extends State<NoteList> {
                       ),
                     ),
                     onPressed: () {
-                      _removeNoteItem(index);
+                      _removeNote(index);
                       final nav = Navigator.of(context);
                       nav.pop();
                       nav.pop();
@@ -131,16 +167,16 @@ class NoteListState extends State<NoteList> {
         });
   }
 
-  void _promptEditNoteItem(int index) {
+  void _promptEditNote(int index) {
     Navigator.of(context).push(new MaterialPageRoute(builder: (context) {
-      final originalText = _noteItems[index].text;
+      final originalText = _notes[index].content;
       return new Scaffold(
           appBar: new AppBar(
             title: new Text('编辑便签'),
             actions: <Widget>[
               new IconButton(
                 icon: const Icon(Icons.delete),
-                onPressed: () => _promptRemoveNoteItem(index),
+                onPressed: () => _promptRemoveNote(index),
                 tooltip: '移除便签',
               ),
             ],
@@ -151,7 +187,7 @@ class NoteListState extends State<NoteList> {
               final text = val.trim();
               if (text.length > 0) {
                 if (text != originalText) {
-                  _updateNoteItem(index, text);
+                  _updateNote(index, text);
                 }
                 Navigator.pop(context);
               }
