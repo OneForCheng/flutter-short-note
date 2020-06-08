@@ -53,7 +53,9 @@ class EditNotePageState extends State<EditNotePage> {
 
   void _updateNote(Note note, String text) async {
     NoteBloc bloc = BlocProvider.of<NoteBloc>(context);
-    bloc.updateNote(Note(text, DateTime.now().toString(), note.id));
+    Note clone = note.clone();
+    clone.content = text;
+    bloc.updateNote(clone);
   }
 
   void _promptRemoveNote(int id) {

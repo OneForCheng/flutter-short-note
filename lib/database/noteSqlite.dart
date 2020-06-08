@@ -26,7 +26,8 @@ class NoteSqliteManager {
           CREATE TABLE $dbTableName (
             $dbColumnId INTEGER PRIMARY KEY AUTOINCREMENT, 
             $dbColumnContent TEXT, 
-            $dbColumnCreateTime TEXT)
+            $dbColumnCreateTime TEXT,
+            $dbColumnCompleted INTEGER DEFAULT 0)
           ''');
     });
   }
@@ -58,6 +59,7 @@ class NoteSqlite {
       dbColumnId,
       dbColumnContent,
       dbColumnCreateTime,
+      dbColumnCompleted,
     ]);
 
     if (maps == null || maps.length == 0) {
@@ -79,6 +81,7 @@ class NoteSqlite {
           dbColumnId,
           dbColumnContent,
           dbColumnCreateTime,
+          dbColumnCompleted,
         ],
         where: '$dbColumnId = ?',
         whereArgs: [id]);

@@ -30,6 +30,6 @@ class AddNotePageState extends State<AddNotePage> {
 
   void _addNote(String text) async {
     NoteBloc bloc = BlocProvider.of<NoteBloc>(context);
-    bloc.addNote(Note(text, DateTime.now().toString()));
+    bloc.addNote(Note(content: text));
   }
 }
