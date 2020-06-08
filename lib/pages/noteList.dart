@@ -68,7 +68,10 @@ class NoteListPageState extends State<NoteListPage> {
               children: <Widget>[
                 Text(
                   note.content,
-                  style: TextStyle(fontSize: 10),
+                  style: TextStyle(
+                    fontSize: 10,
+                    decoration: note.completed == 0 ? TextDecoration.none : TextDecoration.lineThrough,
+                  ),
                 ),
                 Container(
                   margin: const EdgeInsets.only(top: 5.0),

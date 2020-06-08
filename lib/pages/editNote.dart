@@ -14,36 +14,43 @@ class EditNotePage extends StatefulWidget {
 }
 
 class EditNotePageState extends State<EditNotePage> {
-
   @override
   Widget build(BuildContext context) {
     final Note note = widget.note;
 
     return Scaffold(
-          appBar: AppBar(
-            title: Text('编辑便签'),
-            actions: <Widget>[
-              IconButton(
-                icon: const Icon(Icons.delete),
-                onPressed: () => _promptRemoveNote(note.id),
-                tooltip: '移除便签',
-              ),
-            ],
+      appBar: AppBar(
+        title: Text('编辑便签'),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () => _promptRemoveNote(note.id),
+            tooltip: '移除便签',
           ),
-          body: TextField(
-            controller: TextEditingController(text: note.content),
-            onSubmitted: (val) {
-              final text = val.trim();
-              if (text.length > 0) {
-                if (text != note.content) {
-                  _updateNote(note, text);
-                }
-                Navigator.pop(context);
-              }
-            },
-            decoration: InputDecoration(
-                hintText: '记事', contentPadding: const EdgeInsets.all(16.0)),
-          ));
+        ],
+      ),
+      body: TextField(
+        controller: TextEditingController(text: note.content),
+        onSubmitted: (val) {
+          final text = val.trim();
+          if (text.length > 0) {
+            if (text != note.content) {
+              _updateNoteContent(note, text);
+            }
+            Navigator.pop(context);
+          }
+        },
+        decoration: InputDecoration(
+            hintText: '记事', contentPadding: const EdgeInsets.all(16.0)),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _updateNoteState(note);
+          Navigator.pop(context);
+        },
+        child: Icon(note.completed == 0 ? Icons.done : Icons.redo),
+      ),
+    );
   }
 
   void _removeNote(int id) async {
@@ -51,10 +58,17 @@ class EditNotePageState extends State<EditNotePage> {
     bloc.deleteNote(id);
   }
 
-  void _updateNote(Note note, String text) async {
+  void _updateNoteContent(Note note, String text) async {
     NoteBloc bloc = BlocProvider.of<NoteBloc>(context);
     Note clone = note.clone();
     clone.content = text;
+    bloc.updateNote(clone);
+  }
+
+  void _updateNoteState(Note note) async {
+    NoteBloc bloc = BlocProvider.of<NoteBloc>(context);
+    Note clone = note.clone();
+    clone.completed = note.completed == 0 ? 1 : 0;
     bloc.updateNote(clone);
   }
 
