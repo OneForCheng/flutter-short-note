@@ -51,7 +51,8 @@ class NoteListPageState extends State<NoteListPage> {
     return ListView.builder(
       itemCount: notes.length,
       itemBuilder: (context, index) {
-        return _buildNote(notes[index]);
+        // 倒序显示
+        return _buildNote(notes[notes.length - 1 - index]);
       },
     );
   }
@@ -71,6 +72,7 @@ class NoteListPageState extends State<NoteListPage> {
                   style: TextStyle(
                     fontSize: 10,
                     decoration: note.completed == 0 ? TextDecoration.none : TextDecoration.lineThrough,
+                    color: note.completed == 0 ? Colors.black : Colors.grey[500],
                   ),
                 ),
                 Container(
