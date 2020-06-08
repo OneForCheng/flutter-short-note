@@ -7,12 +7,15 @@ import 'package:short_note/bloc/state.dart';
 import 'package:short_note/database/noteSqlite.dart';
 import 'package:short_note/models/note.dart';
 
-class NoteList extends StatefulWidget {
+import 'addNote.dart';
+import 'editNote.dart';
+
+class NoteListPage extends StatefulWidget {
   @override
-  createState() => NoteListState();
+  createState() => NoteListPageState();
 }
 
-class NoteListState extends State<NoteList> {
+class NoteListPageState extends State<NoteListPage> {
   final DateFormat _dateTimeFormat = DateFormat('yyyy-MM-dd hh:mm');
 
   @override
@@ -80,100 +83,21 @@ class NoteListState extends State<NoteList> {
     );
   }
 
-  void _addNote(String text) async {
-    NoteBloc bloc = BlocProvider.of<NoteBloc>(context);
-    bloc.addNote(Note(text, DateTime.now().toString()));
-  }
-
-  void _removeNote(int id) async {
-    NoteBloc bloc = BlocProvider.of<NoteBloc>(context);
-    bloc.deleteNote(id);
-  }
-
-  void _updateNote(Note note, String text) async {
-    NoteBloc bloc = BlocProvider.of<NoteBloc>(context);
-    bloc.updateNote(Note(text, DateTime.now().toString(), note.id));
-  }
-
   void _pushAddNoteScreen() {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return Scaffold(
-          appBar: AppBar(title: Text('添加便签')),
-          body: TextField(
-            autofocus: true,
-            onSubmitted: (val) {
-              final text = val.trim();
-              if (text.length > 0) {
-                _addNote(text);
-                Navigator.pop(context);
-              }
-            },
-            decoration: InputDecoration(
-                hintText: '记事', contentPadding: const EdgeInsets.all(16.0)),
-          ));
+      return BlocProvider(
+        bloc: NoteBloc.instance,
+        child: AddNotePage(),
+      );
     }));
-  }
-
-  void _promptRemoveNote(int index) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return CupertinoAlertDialog(
-              content: Text("是否要删除？"),
-              actions: <Widget>[
-                CupertinoDialogAction(
-                    child: Text(
-                      '取消',
-                      style: TextStyle(
-                        fontSize: 12,
-                      ),
-                    ),
-                    onPressed: () => Navigator.of(context).pop()),
-                CupertinoDialogAction(
-                    child: Text(
-                      '确认',
-                      style: TextStyle(
-                        color: Colors.red[600],
-                        fontSize: 12,
-                      ),
-                    ),
-                    onPressed: () {
-                      _removeNote(index);
-                      final nav = Navigator.of(context);
-                      nav.pop();
-                      nav.pop();
-                    })
-              ]);
-        });
   }
 
   void _promptEditNote(Note note) {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return Scaffold(
-          appBar: AppBar(
-            title: Text('编辑便签'),
-            actions: <Widget>[
-              IconButton(
-                icon: const Icon(Icons.delete),
-                onPressed: () => _promptRemoveNote(note.id),
-                tooltip: '移除便签',
-              ),
-            ],
-          ),
-          body: TextField(
-            controller: TextEditingController(text: note.content),
-            onSubmitted: (val) {
-              final text = val.trim();
-              if (text.length > 0) {
-                if (text != note.content) {
-                  _updateNote(note, text);
-                }
-                Navigator.pop(context);
-              }
-            },
-            decoration: InputDecoration(
-                hintText: '记事', contentPadding: const EdgeInsets.all(16.0)),
-          ));
+      return BlocProvider(
+        bloc: NoteBloc.instance,
+        child: EditNotePage(note),
+      );
     }));
   }
 }

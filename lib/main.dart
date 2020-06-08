@@ -15,7 +15,7 @@ class NoteApp extends StatelessWidget {
       title: '便签',
       home: BlocProvider(
           bloc:  NoteBloc.instance,
-          child: NoteList(),
+          child: NoteListPage(),
         )
     );
   }
