@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:short_note/bloc/bloc.dart';
 import 'package:short_note/bloc/state.dart';
 import 'package:short_note/components/noteItem.dart';
@@ -17,7 +16,6 @@ class NoteListPage extends StatefulWidget {
 }
 
 class NoteListPageState extends State<NoteListPage> {
-  final DateFormat _dateTimeFormat = DateFormat('yyyy-MM-dd hh:mm');
 
   @override
   dispose() async {
