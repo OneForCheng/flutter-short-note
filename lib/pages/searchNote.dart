@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:short_note/bloc/bloc.dart';
 import 'package:short_note/bloc/state.dart';
-import 'package:short_note/components/noteItem.dart';
+import 'package:short_note/components/noteList.dart';
 import 'package:short_note/models/note.dart';
-
-import 'editNote.dart';
 
 class SearchNotePage extends StatefulWidget {
   @override
@@ -58,27 +56,7 @@ class SearchNotePageState extends State<SearchNotePage> {
                   ),
                 ),
               ),
-              body: _buildNoteList(notes));
+              body: NoteList(notes));
         });
-  }
-
-  Widget _buildNoteList(List<Note> notes) {
-    return ListView.builder(
-      itemCount: notes.length,
-      itemBuilder: (context, index) {
-        Note note = notes[notes.length - 1 - index];
-        // 倒序显示
-        return NoteItem(note, () => _gotoEditNotePage(note));
-      },
-    );
-  }
-
-  void _gotoEditNotePage(Note note) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return BlocProvider(
-        bloc: NoteBloc.instance,
-        child: EditNotePage(note),
-      );
-    }));
   }
 }

@@ -3,12 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:short_note/bloc/bloc.dart';
 import 'package:short_note/bloc/state.dart';
-import 'package:short_note/components/noteItem.dart';
+import 'package:short_note/components/noteList.dart';
 import 'package:short_note/database/noteSqlite.dart';
-import 'package:short_note/models/note.dart';
 
 import 'addNote.dart';
-import 'editNote.dart';
 import 'searchNote.dart';
 
 class NoteListPage extends StatefulWidget {
@@ -48,20 +46,9 @@ class NoteListPageState extends State<NoteListPage> {
                 ),
               ],
             ),
-            body: _buildNoteList(state.notes),
+            body: NoteList(state.notes),
           );
         });
-  }
-
-  Widget _buildNoteList(List<Note> notes) {
-    return ListView.builder(
-      itemCount: notes.length,
-      itemBuilder: (context, index) {
-        Note note = notes[notes.length - 1 - index];
-        // 倒序显示
-        return NoteItem(note, () => _gotoEditNotePage(note));
-      },
-    );
   }
 
   void _gotoAddNotePage() {
@@ -69,15 +56,6 @@ class NoteListPageState extends State<NoteListPage> {
       return BlocProvider(
         bloc: NoteBloc.instance,
         child: AddNotePage(),
-      );
-    }));
-  }
-
-  void _gotoEditNotePage(Note note) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return BlocProvider(
-        bloc: NoteBloc.instance,
-        child: EditNotePage(note),
       );
     }));
   }
