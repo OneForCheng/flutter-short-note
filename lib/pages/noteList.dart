@@ -9,6 +9,7 @@ import 'package:short_note/models/note.dart';
 
 import 'addNote.dart';
 import 'editNote.dart';
+import 'searchNote.dart';
 
 class NoteListPage extends StatefulWidget {
   @override
@@ -16,7 +17,6 @@ class NoteListPage extends StatefulWidget {
 }
 
 class NoteListPageState extends State<NoteListPage> {
-
   @override
   dispose() async {
     super.dispose();
@@ -35,9 +35,16 @@ class NoteListPageState extends State<NoteListPage> {
               title: Text('便签'),
               actions: <Widget>[
                 IconButton(
+                  icon: const Icon(
+                    Icons.search,
+                  ),
+                  onPressed: _gotoSearchNotePage,
+                  tooltip: '搜索',
+                ),
+                IconButton(
                   icon: const Icon(Icons.note_add),
-                  onPressed: _pushAddNoteScreen,
-                  tooltip: '添加便签',
+                  onPressed: _gotoAddNotePage,
+                  tooltip: '添加',
                 ),
               ],
             ),
@@ -52,12 +59,12 @@ class NoteListPageState extends State<NoteListPage> {
       itemBuilder: (context, index) {
         Note note = notes[notes.length - 1 - index];
         // 倒序显示
-        return NoteItem(note, () => _promptEditNote(note));
+        return NoteItem(note, () => _gotoEditNotePage(note));
       },
     );
   }
 
-  void _pushAddNoteScreen() {
+  void _gotoAddNotePage() {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
       return BlocProvider(
         bloc: NoteBloc.instance,
@@ -66,11 +73,20 @@ class NoteListPageState extends State<NoteListPage> {
     }));
   }
 
-  void _promptEditNote(Note note) {
+  void _gotoEditNotePage(Note note) {
     Navigator.of(context).push(MaterialPageRoute(builder: (context) {
       return BlocProvider(
         bloc: NoteBloc.instance,
         child: EditNotePage(note),
+      );
+    }));
+  }
+
+  void _gotoSearchNotePage() {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+      return BlocProvider(
+        bloc: NoteBloc.instance,
+        child: SearchNotePage(),
       );
     }));
   }
