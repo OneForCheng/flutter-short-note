@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:short_note/bloc/bloc.dart';
 import 'package:short_note/bloc/state.dart';
+import 'package:short_note/components/noteItem.dart';
 import 'package:short_note/database/noteSqlite.dart';
 import 'package:short_note/models/note.dart';
 
@@ -51,40 +52,10 @@ class NoteListPageState extends State<NoteListPage> {
     return ListView.builder(
       itemCount: notes.length,
       itemBuilder: (context, index) {
+        Note note = notes[notes.length - 1 - index];
         // 倒序显示
-        return _buildNote(notes[notes.length - 1 - index]);
+        return NoteItem(note, () => _promptEditNote(note));
       },
-    );
-  }
-
-  Widget _buildNote(Note note) {
-    return Card(
-      child: InkWell(
-        onTap: () => _promptEditNote(note),
-        child: Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  note.content,
-                  style: TextStyle(
-                    fontSize: 10,
-                    decoration: note.completed == 0 ? TextDecoration.none : TextDecoration.lineThrough,
-                    color: note.completed == 0 ? Colors.black : Colors.grey[500],
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.only(top: 5.0),
-                  child: Text(
-                    _dateTimeFormat.format(DateTime.parse(note.createTime)),
-                    style: TextStyle(fontSize: 8, color: Colors.grey[500]),
-                  ),
-                ),
-              ]),
-        ),
-      ),
     );
   }
 
